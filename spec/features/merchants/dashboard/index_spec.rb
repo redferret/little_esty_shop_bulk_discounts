@@ -40,6 +40,10 @@ RSpec.describe 'merchant dashboard' do
     visit merchant_dashboard_index_path(@merchant1)
   end
 
+  it 'has a link to view all merchants bulk discounts' do
+    expect(page).to have_link('View Bulk Discounts')
+  end
+
   it 'shows the merchant name' do
     expect(page).to have_content(@merchant1.name)
   end
