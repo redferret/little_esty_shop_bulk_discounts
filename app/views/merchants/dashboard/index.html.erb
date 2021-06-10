@@ -10,32 +10,30 @@
   </nav>
 </div>
 
-<body>
-  <div class="row">
-    <p class='mr-auto col-sm-5'>Favorite Customers</p>
-    <p class='ml-auto col-sm-5'>Items Ready to Ship</p>
-  </div>
-  <div class='row'>
-    <div class='col'>
-      <ul>
-        <% @merchant.favorite_customers.each do |customer| %>
-          <section id="customer-<%= customer.id %>">
-              <li><%= customer.first_name %> <%= customer.last_name %>
-              - <%= customer.top_result %> Purchases</li>
-          </section>
-        <% end %>
-      </ul>
-    </div>
-    <div class='col'>
-      <ul>
-        <section id = "items_ready_to_ship" >
-          <p><% @merchant.ordered_items_to_ship.each do |item| %>
-                <li><%= item.name %> - Invoice #<%= link_to "#{item.invoice_ids}", merchant_invoice_url(@merchant.id, item.invoice_ids[0]) %>
-                <%= item.created_at.strftime("%A, %B %-d, %Y") %></li>
-            <% end %>
-          </p>
+<div class="row">
+  <p class='mr-auto col-sm-5'>Favorite Customers</p>
+  <p class='ml-auto col-sm-5'>Items Ready to Ship</p>
+</div>
+<div class='row'>
+  <div class='col'>
+    <ul>
+      <% @merchant.favorite_customers.each do |customer| %>
+        <section id="customer-<%= customer.id %>">
+            <li><%= customer.first_name %> <%= customer.last_name %>
+            - <%= customer.top_result %> Purchases</li>
         </section>
-      </ul>
-    </div>
+      <% end %>
+    </ul>
   </div>
-</body>
+  <div class='col'>
+    <ul>
+      <section id = "items_ready_to_ship" >
+        <p><% @merchant.ordered_items_to_ship.each do |item| %>
+              <li><%= item.name %> - Invoice #<%= link_to "#{item.invoice_ids}", merchant_invoice_url(@merchant.id, item.invoice_ids[0]) %>
+              <%= item.created_at.strftime("%A, %B %-d, %Y") %></li>
+          <% end %>
+        </p>
+      </section>
+    </ul>
+  </div>
+</div>
