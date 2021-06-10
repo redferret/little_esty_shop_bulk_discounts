@@ -49,7 +49,7 @@ RSpec.describe 'merchant dashboard' do
 
     click_link "Items"
 
-    expect(current_path).to eq("/merchant/#{@merchant1.id}/items")
+    expect(current_path).to eq(merchant_items_path(@merchant1))
   end
 
   it 'can see a link to my merchant invoices index' do
@@ -57,7 +57,7 @@ RSpec.describe 'merchant dashboard' do
 
     click_link "Invoices"
 
-    expect(current_path).to eq("/merchant/#{@merchant1.id}/invoices")
+    expect(current_path).to eq(merchant_invoices_path(@merchant1))
   end
 
   it 'shows the names of the top 5 customers with successful transactions' do
@@ -104,12 +104,12 @@ RSpec.describe 'merchant dashboard' do
   end
 
   it "each invoice id is a link to my merchant's invoice show page " do
-    expect(page).to have_link(@item_1.invoice_ids)
-    expect(page).to have_link(@item_2.invoice_ids)
-    expect(page).to_not have_link(@item_3.invoice_ids)
+    expect(page).to have_link("#{@item_1.invoice_ids}")
+    expect(page).to have_link("#{@item_2.invoice_ids}")
+    expect(page).to_not have_link("#{@item_3.invoice_ids}")
 
     click_link("#{@item_1.invoice_ids}", match: :first)
-    expect(current_path).to eq("/merchant/#{@merchant1.id}/invoices/#{@invoice_1.id}")
+    expect(current_path).to eq(merchant_invoice_path(@merchant1, @invoice_1))
   end
 
   it "shows the date that the invoice was created in this format: Monday, July 18, 2019" do
