@@ -8,7 +8,7 @@ class InvoiceItem < ApplicationRecord
   belongs_to :invoice
   belongs_to :item
 
-  enum status: [:pending, :packaged, :shipped]
+  enum status: { pending: 0, packaged: 1, shipped: 2 }
 
   def self.incomplete_invoices
     invoice_ids = InvoiceItem.where("status = 0 OR status = 1").pluck(:invoice_id)

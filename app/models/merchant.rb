@@ -1,12 +1,12 @@
 class Merchant < ApplicationRecord
   validates_presence_of :name
-  has_many :items
-  has_many :invoice_items, through: :items
+  has_many :items, dependent: :destroy
+  has_many :invoice_items, through: :items, dependent: :destroy
   has_many :invoices, through: :invoice_items
   has_many :customers, through: :invoices
   has_many :transactions, through: :invoices
 
-  enum status: [:enabled, :disabled]
+  enum status: { enabled: 0, disabled: 1 }
 
   def favorite_customers
     transactions
