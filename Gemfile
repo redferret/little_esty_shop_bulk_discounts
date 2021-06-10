@@ -33,6 +33,10 @@ gem 'turbolinks', '~> 5'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+source 'https://rails-assets.org' do
+  gem 'rails-assets-tether', '>= 1.1.0'
+end
+
 gem 'jquery-rails'
 
 gem 'bootstrap', '~> 4.5.3'
