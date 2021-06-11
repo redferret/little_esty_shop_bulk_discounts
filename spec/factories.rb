@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :bulk_discount do
-    percentage_discount { rand }
+    percentage_discount { rand(5..90) }
     quantity_threshold { [ 5, 10, 15, 20 ].sample }
   end
 

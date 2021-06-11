@@ -58,7 +58,7 @@ RSpec.describe Item, type: :model do
       @transaction6 = Transaction.create!(credit_card_number: 879799, result: 0, invoice_id: @invoice_6.id)
       @transaction7 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_7.id)
 
-      expect(@item_1.best_day).to eq(@invoice_2.created_at.to_date)
+      expect(@item_1.best_day).to eq(@invoice_2.created_at)
     end
   end
 end

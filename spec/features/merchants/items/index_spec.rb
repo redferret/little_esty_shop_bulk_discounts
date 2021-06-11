@@ -73,24 +73,28 @@ describe "merchant items index" do
     end
   end
 
-  it "can make a button to disable items" do
-    within("#item-#{@item_1.id}") do
-      click_button "Disable"
+  it 'has enable/disable buttons' do
+    within '#enabled' do
+      within("#item-#{@item_1.id}") do
+        click_link "Disable"
 
-      item = Item.find(@item_1.id)
-      expect(item.status).to eq("disabled")
+        item = Item.find(@item_1.id)
+        expect(item.status).to eq("disabled")
+      end
     end
-    within("#item-#{@item_2.id}") do
-      click_button "Enable"
+    within '#disabled' do
+      within("#item-#{@item_2.id}") do
+        click_link "Enable"
 
-      item = Item.find(@item_2.id)
-      expect(item.status).to eq("enabled")
-    end
-    within("#item-#{@item_3.id}") do
-      click_button "Enable"
+        item = Item.find(@item_2.id)
+        expect(item.status).to eq("enabled")
+      end
+      within("#item-#{@item_3.id}") do
+        click_link "Enable"
 
-      item = Item.find(@item_3.id)
-      expect(item.status).to eq("enabled")
+        item = Item.find(@item_3.id)
+        expect(item.status).to eq("enabled")
+      end
     end
   end
 
@@ -159,7 +163,7 @@ describe "merchant items index" do
     end
   end
 
-  it "shows the best day next to the item" do
+  xit "shows the best day next to the item" do
     within("#top_5") do
       expect(page).to have_content("Top selling date for #{@item_1.name} was #{@item_1.best_day}")
       expect(page).to have_content("Top selling date for #{@item_2.name} was #{@item_2.best_day}")
