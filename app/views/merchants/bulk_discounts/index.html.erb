@@ -1,26 +1,37 @@
 <%= render partial: 'merchants/partials/navbar', locals: { merchant: @merchant }%>
 
-<div class="row">
-  <p class='mr-auto col-sm-6'>Bulk Discounts</p>
-  <p class='mr-auto col-sm-6'>Upcoming Holidays</p>
-</div>
 <div class='row'>
   <div class='col'>
-    <ul id='discount-list'>
+    <h4 class='text-center'>Bulk Discounts</h4>
+    <table class='table text-center' id='discount-list'>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Discount Percent (%)</th>
+          <th>Min Quantity</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
       <% @merchant.bulk_discounts.each_with_index do |discount, index| %>
-        <section id="discount-<%= discount.id %>">
-            <li><%= link_to link_string(index, discount), merchant_bulk_discount_path(@merchant, discount), class:'btn btn-link' %> </li>
-        </section>
+        <tr id='discount-<%= discount.id%>'>
+          <td><%= (index + 1)%>.</td>
+          <td><%= formatted_percentage_discount(discount)%></td>
+          <td><%= discount.quantity_threshold%> </td>
+          <td><%= link_to 'View Discount', merchant_bulk_discount_path(@merchant, discount), class:'btn btn-light'%></td>
+        </tr>
       <% end %>
-    </ul>
+      </tbody>
+    </table>
   </div>
-  <div class='col'>
-    <ul id='upcoming-holidays'>
+  <div class='col text-center'>
+    <h4>Upcoming Holidays</h4>
+    <div id='upcoming-holidays'>
       <% @upcoming_holidays.each_with_index do |holiday, index| %>
-        <section id="holiday-<%= (index + 1)%>">
-            <li><%= holiday['localName']%> </li>
-        </section>
+        <div class='row' id="holiday-<%= (index + 1)%>">
+          <div class='col'><%= holiday['localName']%> </div>
+        </div>
       <% end %>
-    </ul>
+    </div>
   </div>
 </div>
