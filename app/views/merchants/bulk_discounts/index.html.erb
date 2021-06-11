@@ -9,9 +9,9 @@
     </ul>
   </nav>
 </div>
-
 <div class="row">
-  <p class='mr-auto col-sm-5'>Bulk Discounts</p>
+  <p class='mr-auto col-sm-6'>Bulk Discounts</p>
+  <p class='mr-auto col-sm-6'>Upcoming Holidays</p>
 </div>
 <div class='row'>
   <div class='col'>
@@ -19,6 +19,15 @@
       <% @merchant.bulk_discounts.each_with_index do |discount, index| %>
         <section id="discount-<%= discount.id %>">
             <li><%= link_to link_string(index, discount), merchant_bulk_discount_path(@merchant, discount), class:'btn btn-link' %> </li>
+        </section>
+      <% end %>
+    </ul>
+  </div>
+  <div class='col'>
+    <ul id='upcoming-holidays'>
+      <% @upcoming_holidays.each_with_index do |holiday, index| %>
+        <section id="holiday-<%= (index + 1)%>">
+            <li><%= holiday['localName']%> </li>
         </section>
       <% end %>
     </ul>
