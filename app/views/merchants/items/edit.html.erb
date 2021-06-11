@@ -1,3 +1,3 @@
-<%= render partial: 'navbar', locals: { merchant: @merchant }%>
+<%= render partial: 'merchants/partials/navbar', locals: { merchant: @merchant }%>
 
 <%= render partial: 'form', locals: { method: :patch, url: merchant_item_path(@merchant, @item), css_class: 'merchant_item_form', model: @item} %>
