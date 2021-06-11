@@ -1,8 +1,8 @@
 class Merchants::BulkDiscountsController < ApplicationController
-  before_action :set_merchant_discount_models, only: %i[ index show ]
+  before_action :set_merchant
 
   def index
-    @upcoming_holidays = NagerAPI::Client.new().upcoming_holidays
+    @upcoming_holidays = NagerAPI::Client.upcoming_holidays
   end
   
   def show
