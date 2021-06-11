@@ -4,6 +4,6 @@ module BulkDiscountHelper
   end
 
   def formatted_percentage_discount(discount)
-    "%0.2f%%" % [discount.percentage_discount * 100]
+    "%0.0f%%" % [discount.percentage_discount * 100]
   end
 end
