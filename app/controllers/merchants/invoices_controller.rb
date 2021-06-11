@@ -1,4 +1,4 @@
-class InvoicesController < ApplicationController
+class Merchants::InvoicesController < ApplicationController
   before_action :find_invoice_and_merchant, only: [:show, :update]
   before_action :find_merchant, only: [:index]
 

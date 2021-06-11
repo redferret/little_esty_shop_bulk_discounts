@@ -8,7 +8,7 @@ class Item < ApplicationRecord
   has_many :invoices, through: :invoice_items
   belongs_to :merchant
 
-  enum status: [:disabled, :enabled]
+  enum status: { disabled: 0, enabled: 1 }
 
   def best_day
     invoices
