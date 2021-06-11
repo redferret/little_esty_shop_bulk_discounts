@@ -10,6 +10,10 @@ RSpec.describe 'The index page for merchants bulk discounts,' do
     visit merchant_bulk_discounts_path(@merchant)
   end
 
+  it 'has a link to add a new discount' do
+    expect(page).to have_link('Add new Discount', href: new_merchant_bulk_discount_path(@merchant))
+  end
+
   describe 'discounts list,' do
     it 'shows the discounts with their attributes' do
       within "#discount-#{@discount_1.id}" do
