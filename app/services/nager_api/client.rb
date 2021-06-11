@@ -4,21 +4,21 @@ require_relative 'api_calls'
 module NagerAPI
   class Client
     
-    include ApiExceptions
-    include ApiCalls
+    extend ApiExceptions
+    extend ApiCalls
 
     API_ENDPOINT = 'https://date.nager.at'.freeze
 
     attr_reader :response
 
     private
-    def client
+    def self.client
       @_faraday_connection ||= Faraday.new(API_ENDPOINT) do |client|
         client.headers['Accept'] = 'application/json'
       end
     end
 
-    def request(http_method: :get, endpoint: nil, params: {})
+    def self.request(http_method: :get, endpoint: nil, params: {})
       raise 'API endpoint must be defined' if endpoint.nil?
       
       @response = client.public_send(http_method, endpoint, params)
@@ -28,7 +28,7 @@ module NagerAPI
       raise http_error, "Status: #{response.status}, Response: #{response.body}"
     end
     
-    def parse_json
+    def self.parse_json
       Oj.load(response.body)
     end
   end
