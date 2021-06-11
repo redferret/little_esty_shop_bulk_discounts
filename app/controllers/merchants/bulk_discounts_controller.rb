@@ -10,21 +10,26 @@ class Merchants::BulkDiscountsController < ApplicationController
   end
 
   def new
+    @bulk_discount = BulkDiscount.new
   end
 
   def create
-    if @merchant.bulk_discounts.create!(bulk_discount_params)
+    @bulk_discount = BulkDiscount.new(bulk_discount_params)
+    @bulk_discount.merchant_id = @merchant.id
+
+    if @bulk_discount.save
+      flash[:success] = "Created new Discount"
       redirect_to merchant_bulk_discounts_path(@merchant)
     else
       flash[:alert] = "Couldn't create discount"
-      redirect_to edit_merchant_bulk_discount_path(@merchant, @bulk_discount)
+      redirect_to new_merchant_bulk_discount_path(@merchant)
     end
   end
 
   def update
     @bulk_discount = BulkDiscount.find(params[:id])
 
-    if @bulk_discount.update!(bulk_discount_params)
+    if @bulk_discount.update(bulk_discount_params)
       redirect_to merchant_bulk_discount_path(@merchant, @bulk_discount)
     else
       flash[:alert] = "Couldn't update discount"
