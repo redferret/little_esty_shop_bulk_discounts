@@ -16,8 +16,8 @@
       <% @merchant.bulk_discounts.each_with_index do |discount, index| %>
         <tr id='discount-<%= discount.id%>'>
           <td><%= (index + 1)%>.</td>
-          <td><%= formatted_percentage_discount(discount)%></td>
-          <td><%= discount.quantity_threshold%> </td>
+          <td><%= discount.percentage_discount%>%</td>
+          <td><%= discount.quantity_threshold%></td>
           <td><%= link_to 'View Discount', merchant_bulk_discount_path(@merchant, discount), class:'btn btn-light'%></td>
         </tr>
       <% end %>
