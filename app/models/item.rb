@@ -18,7 +18,5 @@ class Item < ApplicationRecord
     .group(:id)
     .order("money desc", "created_at desc")
     .first
-    .created_at
-    .to_date
   end
 end
