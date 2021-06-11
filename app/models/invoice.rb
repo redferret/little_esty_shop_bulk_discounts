@@ -11,6 +11,10 @@ class Invoice < ApplicationRecord
   enum status: { cancelled: 0, in_progress: 1, completed: 2 }
 
   def total_revenue
-    invoice_items.sum("unit_price * quantity")
+    invoice_items.sum("unit_price * quantity") / 100
+  end
+
+  def discounted_revenue
+    0
   end
 end

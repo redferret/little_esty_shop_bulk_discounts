@@ -1,20 +1,28 @@
 <%= render partial: 'merchants/partials/navbar', locals: { merchant: @merchant }%>
-
-<div class="row">
-  <p class='col-12'>Invoice #<%= @invoice.id %></p>
-</div>
-
-<strong>Status: </strong><%= @invoice.status %><br/>
-<br>
-
-<p> Created on: <%= @invoice.created_at.strftime("%A, %B %-d, %Y") %></p>
-<p>Total Revenue: <%= @invoice.total_revenue %></p>
-
-
-<h4>Customer:</h4>
-  <%= @customer.first_name %> <%= @customer.last_name %><br>
-<br>
-<br>
+<table class='table'>
+  <thead>
+    <tr>
+      <th>Invoice #</th>
+      <th>Status</th>
+      <th>Creation Date</th>
+      <th>Total Revenue</th>
+      <th>Discounted Revenue</th>
+      <th>Customer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><%= @invoice.id%></td>
+      <td><%= @invoice.status%></td>
+      <td><%= @invoice.created_at.strftime("%A, %B %-d, %Y")%></td>
+      <td>$<%= @invoice.total_revenue%></td>
+      <td>$<%= @invoice.discounted_revenue%></td>
+      <td><%= @customer.first_name %> <%= @customer.last_name %></td>
+    </tr>
+  </tbody>
+</table>
+<br/>
+<br/>
 <h4>Items on this Invoice:</h4>
 <table class="table">
   <thead>
@@ -28,17 +36,17 @@
 
   <tbody>
     <% @invoice.invoice_items.each do |i| %>
-      <section id="the-status-<%= i.id %>">
-        <tr class="tr">
-          <td style="text-align:center"><%= i.item.name %></td>
-          <td style="text-align:center"><%= i.quantity %></td>
-          <td style="text-align:center">$<%= i.unit_price %></td>
-          <td style="text-align:center"><%= form_with model: @invoice, url: merchant_invoice_path(@merchant, @invoice), method: :patch do |f| %>
-                                          <%= f.select :status, Invoice.statuses.keys, selected: "#{@invoice.status}" %>
-                                          <%= f.submit 'Update Invoice' %>
-                                        <% end %></td><br/>
-        </tr>
-      </section>
+      <tr class='text-center' id="the-status-<%= i.id %>">
+        <td><%= i.item.name %></td>
+        <td><%= i.quantity %></td>
+        <td>$<%= i.unit_price / 100 %></td>
+        <td>
+          <%= form_with model: @invoice, url: merchant_invoice_path(@merchant, @invoice), method: :patch do |f| %>
+            <%= f.select :status, Invoice.statuses.keys, selected: "#{@invoice.status}" %>
+            <%= f.submit 'Update Invoice', class:'btn btn-primary btn-sm' %>
+          <% end %>
+        </td>
+      </tr>
     <% end %>
   </tbody>
 </table>
