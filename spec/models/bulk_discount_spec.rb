@@ -8,5 +8,6 @@ RSpec.describe BulkDiscount, type: :model do
 
   describe 'relationship,' do
     it { should belong_to :merchant }
+    it { should have_many :invoice_items }
   end
 end
