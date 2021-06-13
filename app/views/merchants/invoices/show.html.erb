@@ -24,29 +24,37 @@
 <br/>
 <br/>
 <h4>Items on this Invoice:</h4>
-<table class="table">
+<table class="table text-justify">
   <thead>
-    <tr class="tr">
-      <th class="th1">Item Name</th>
-      <th class="th1">Quantity</th>
-      <th class="th1">Unit Price</th>
-      <th class="th1">Status</th>
+    <tr>
+      <th>Item Name</th>
+      <th>Quantity</th>
+      <th>Unit Price</th>
+      <th>Bulk Discount</th>
+      <th>Status</th>
     </tr>
   </thead>
 
   <tbody>
     <% @invoice.invoice_items.each do |i| %>
-      <tr class='text-center' id="the-status-<%= i.id %>">
+      <tr id="invoice-item-<%= i.id %>">
         <td><%= i.item.name %></td>
         <td><%= i.quantity %></td>
         <td>$<%= i.unit_price / 100 %></td>
         <td>
-          <%= form_with model: @invoice, url: merchant_invoice_path(@merchant, @invoice), method: :patch do |f| %>
-            <%= f.select :status, Invoice.statuses.keys, selected: "#{@invoice.status}" %>
-            <%= f.submit 'Update Invoice', class:'btn btn-primary btn-sm' %>
+          <% id = @invoice.invoice_item_with_discount(i.id) %>
+          <% if id %>
+            <%= link_to 'Applied Discount', merchant_bulk_discount_url(@merchant.id, id), class:'btn btn-light btn-sm'%>
           <% end %>
         </td>
+        <td><%= i.status %></td>
       </tr>
     <% end %>
   </tbody>
+  <%= form_with model: @invoice, url: merchant_invoice_path(@merchant, @invoice), method: :patch, local: true do |f| %>
+    <div class='form-group'>
+      <%= f.select :status, Invoice.statuses.keys, selected: "#{@invoice.status}", class:'form-control' %>
+    </div>
+    <%= f.submit 'Update Invoice', class:'btn btn-primary btn-sm' %>
+  <% end %>
 </table>
