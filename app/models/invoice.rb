@@ -11,33 +11,24 @@ class Invoice < ApplicationRecord
 
   enum status: { cancelled: 0, in_progress: 1, completed: 2 }
 
+  def self.invoices_ready_to_ship(merchant_id)
+    Invoice.joins(:invoice_items, :items).where(items: {merchant_id: merchant_id}, invoice_items: {status: 'packaged'}).distinct
+  end
+
   def total_revenue
     invoice_items.sum("(unit_price * quantity) / 100.0").round(2)
   end
 
-  def invoice_item_with_discount(invoice_item_id)
-    discounts = bulk_discounts.where('invoice_items.quantity >= bulk_discounts.quantity_threshold')
-                  .where(invoice_items: {id: invoice_item_id})
-                  .select('MAX(bulk_discounts.percentage_discount) as percentage')
-                  .select('invoice_items.id')
-                  .select('bulk_discounts.id as bulk_discount_id')
-                  .group('invoice_items.id, bulk_discounts.id')
-                  
-    discount = discounts.max_by do |discount|
-      discount.percentage
-    end
-    
-    if discount
-      discount.bulk_discount_id
-    end
-  end
-
-  def has_discount_applied?
+  def has_discounts_applied?
     bulk_discounts.where('invoice_items.quantity >= bulk_discounts.quantity_threshold').count > 0
   end
 
+  def invoice_creation_date
+    created_at.strftime("%A, %B %d, %Y")
+  end
+
   def discounted_revenue
-    if has_discount_applied?
+    if has_discounts_applied?
       result_set_sum_discounted_prices = ActiveRecord::Base.connection.execute(
       "SELECT SUM(discounted_prices) / 100.0 as sum_discounted_prices FROM (" +
       "#{bulk_discounts.where('invoice_items.quantity >= bulk_discounts.quantity_threshold')
