@@ -15,15 +15,27 @@
       <% end %>
     </ul>
   </div>
-  <div class='col'>
-    <ul>
-      <section id = "items_ready_to_ship" >
-        <p><% @merchant.ordered_items_to_ship.each do |item| %>
-              <li><%= item.name %> - Invoice #<%= link_to "#{item.invoice_ids}", merchant_invoice_url(@merchant.id, item.invoice_ids[0]) %>
-              <%= item.created_at.strftime("%A, %B %-d, %Y") %></li>
-          <% end %>
-        </p>
-      </section>
-    </ul>
+  <div class='col' id="ready-to-ship">
+    <h2>Items Ready to Ship</h2>
+    <table class='table'>
+      <thead>
+        <tr>
+          <th>Item Name</th>
+          <th>Invoice</th>
+          <th>Creation Date</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% @invoices_ready_to_ship.each do |invoice| %>
+        <% invoice.invoice_items.each do |invoice_item| %>
+          <tr id='invoice-item-<%=invoice_item.id%>'>
+            <td><%= invoice_item.item.name %></td>
+            <td><%= link_to "Invoice ##{invoice.id}", merchant_invoice_path(@merchant, invoice) %></td>
+            <td><%= invoice.invoice_creation_date %><br></td>
+          </tr>
+        <% end %>
+      <% end %>
+      </tbody>
+    </table>
   </div>
 </div>
