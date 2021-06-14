@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'invoices show' do
+RSpec.describe 'invoices show page,' do
   before :each do
     @merchant1 = Merchant.create!(name: 'Hair Care')
     @merchant2 = Merchant.create!(name: 'Jewelry')
@@ -53,7 +53,7 @@ RSpec.describe 'invoices show' do
     @transaction8 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_8.id)
   end
 
-  it "shows the invoice information" do
+  it "has the invoice information" do
     visit merchant_invoice_path(@merchant1, @invoice_1)
 
     expect(page).to have_content(@invoice_1.id)
@@ -61,7 +61,7 @@ RSpec.describe 'invoices show' do
     expect(page).to have_content(@invoice_1.created_at.strftime("%A, %B %-d, %Y"))
   end
 
-  it "shows the customer information" do
+  it "has the customer information" do
     visit merchant_invoice_path(@merchant1, @invoice_1)
 
     expect(page).to have_content(@customer_1.first_name)
@@ -69,26 +69,24 @@ RSpec.describe 'invoices show' do
     expect(page).to_not have_content(@customer_2.last_name)
   end
 
-  it "shows the item information" do
+  it "has the item information" do
     visit merchant_invoice_path(@merchant1, @invoice_1)
-
-    expect(page).to have_content(@item_1.name)
-    expect(page).to have_content(@ii_1.quantity)
-    expect(page).to have_content(@ii_1.unit_price)
-    expect(page).to_not have_content(@ii_4.unit_price)
-
+    within "invoice-item-#{@ii_1.id}"
+      expect(page).to have_content(@item_1.name)
+      expect(page).to have_content(@ii_1.quantity)
+      expect(page).to have_content('$0.10')
   end
 
-  it "shows the total revenue for this invoice" do
+  it "has the total revenue for this invoice" do
     visit merchant_invoice_path(@merchant1, @invoice_1)
 
     expect(page).to have_content(@invoice_1.total_revenue)
   end
 
-  it "shows a select field to update the invoice status" do
+  it "has a select field to update the invoice status" do
     visit merchant_invoice_path(@merchant1, @invoice_1)
 
-    within("#the-status-#{@ii_1.id}") do
+    within("#update-invoice-status") do
       page.select("cancelled")
       click_button "Update Invoice"
       expect(page).to have_content("cancelled")

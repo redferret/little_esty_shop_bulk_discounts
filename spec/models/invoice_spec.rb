@@ -40,9 +40,8 @@ RSpec.describe Invoice, type: :model do
     end
 
     describe '#total_discounted_revenue' do
-      it 'returns the total revenue with discounts that are applied or not' do
+      it 'returns the total revenue with discounts that are applied' do
         expect(@invoice_1.total_discounted_revenue).to eq(9100.0)
-        expect(@invoice_2.total_discounted_revenue).to eq(8200.0)
       end
 
       it 'returns the sum from #non_discounted_revenue and #discounted_revenue' do
