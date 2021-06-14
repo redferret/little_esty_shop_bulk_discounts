@@ -6,6 +6,7 @@ class BulkDiscount < ApplicationRecord
   belongs_to :merchant
 
   def apply_discount
+    invoice_items.clear
     next_quantity_threshold = BulkDiscount.where('quantity_threshold > ?', quantity_threshold).minimum('quantity_threshold')
     previous_quantity_threshold = BulkDiscount.where('quantity_threshold < ?', quantity_threshold).maximum('quantity_threshold')
 
