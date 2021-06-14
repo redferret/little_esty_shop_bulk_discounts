@@ -30,5 +30,7 @@ FactoryBot.define do
 
   factory :invoice_item do
     status { [ 0, 1, 2 ].sample }
+    quantity { rand(1..20) }
+    unit_price { rand(100..99999) }
   end
 end
