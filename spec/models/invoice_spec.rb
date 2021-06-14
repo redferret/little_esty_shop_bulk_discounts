@@ -20,9 +20,16 @@ RSpec.describe Invoice, type: :model do
     @invoice_1 = Invoice.create!(customer_id: @customer_1.id, status: 1, created_at: "2021-06-14 14:54:09")
     @ii_1 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 9, unit_price: 1000, status: 2)
     @ii_11 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_2.id, quantity: 1, unit_price: 1000, status: 1)
+    
+    @item_3 = FactoryBot.create(:item, merchant: @merchant1, unit_price: 1000)
+    @item_4 = FactoryBot.create(:item, merchant: @merchant1, unit_price: 2300)
+    @customer_2 = FactoryBot.create(:customer)
+    @invoice_2 = FactoryBot.create(:invoice, customer: @customer_2, status: 1)
+    @invoice_item_3 = FactoryBot.create(:invoice_item, invoice: @invoice_2, item: @item_3, quantity: 2, unit_price: 2300)
+    @invoice_item_4 = FactoryBot.create(:invoice_item, invoice: @invoice_2, item: @item_4, quantity: 3, unit_price: 1200)
 
-    @discount = FactoryBot.create(:bulk_discount, merchant: @merchant1, percentage_discount: 10, quantity_threshold: 5)
-    @discount.apply_discount
+    @discount_1 = FactoryBot.create(:bulk_discount, merchant: @merchant1, percentage_discount: 10, quantity_threshold: 5)
+    @discount_1.apply_discount
   end
 
   describe "instance method," do
@@ -33,8 +40,9 @@ RSpec.describe Invoice, type: :model do
     end
 
     describe '#total_discounted_revenue' do
-      it 'returns the total revenue with discounts applied' do
+      it 'returns the total revenue with discounts that are applied or not' do
         expect(@invoice_1.total_discounted_revenue).to eq(9100.0)
+        expect(@invoice_2.total_discounted_revenue).to eq(8200.0)
       end
 
       it 'returns the sum from #non_discounted_revenue and #discounted_revenue' do
