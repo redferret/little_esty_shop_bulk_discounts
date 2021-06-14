@@ -16,38 +16,38 @@ class Invoice < ApplicationRecord
   end
 
   def total_revenue
-    invoice_items.sum("(unit_price * quantity) / 100.0").round(2)
-  end
-
-  def has_discounts_applied?
-    bulk_discounts.where('invoice_items.quantity >= bulk_discounts.quantity_threshold').count > 0
+    invoice_items.sum("(unit_price * quantity)")
   end
 
   def invoice_creation_date
     created_at.strftime("%A, %B %d, %Y")
   end
 
+  def total_discounted_revenue
+    (non_discounted_revenue + discounted_revenue)
+  end
+
+  private
+  
+  def non_discounted_revenue
+    revenue = invoice_items.joins('INNER JOIN items ON invoice_items.item_id = items.id')
+                           .joins('INNER JOIN merchants ON items.merchant_id = merchants.id')
+                           .where(invoice_items: {bulk_discount_id: nil})
+                           .where('merchants.id = items.merchant_id')
+                           .where(invoice_items: {invoice_id: id})
+                           .sum('invoice_items.unit_price * invoice_items.quantity')
+    return 0 if revenue.nil?
+    revenue
+  end
+                          
   def discounted_revenue
-    if has_discounts_applied?
-      result_set_sum_discounted_prices = ActiveRecord::Base.connection.execute(
-      "SELECT SUM(discounted_prices) / 100.0 as sum_discounted_prices FROM (" +
-      "#{bulk_discounts.where('invoice_items.quantity >= bulk_discounts.quantity_threshold')
-                        .select('(1.0 - (MAX(bulk_discounts.percentage_discount) / 100.0)) * (invoice_items.unit_price) * invoice_items.quantity as discounted_prices')
-                        .select('invoice_items.id')
-                        .group('invoice_items.id').to_sql}) as sub_table")
-
-      result_set_sum_normal_prices = ActiveRecord::Base.connection.execute(
-      "SELECT SUM(normal_prices) / 100.0 as sum_normal_prices FROM (" +
-      "#{bulk_discounts.select('CASE WHEN (invoice_items.quantity < MIN(bulk_discounts.quantity_threshold)) THEN (invoice_items.unit_price) * invoice_items.quantity ELSE 0 END as normal_prices')
-                        .select('invoice_items.id')
-                        .group('invoice_items.id').to_sql}) as sub_table")
-
-      sum_discounted_prices = result_set_sum_discounted_prices.first['sum_discounted_prices']
-      sum_normal_prices = result_set_sum_normal_prices.first['sum_normal_prices']
-        
-      (sum_discounted_prices + sum_normal_prices).round(2)
-    else
-      total_revenue
-    end
+    revenue = invoice_items.joins('INNER JOIN items ON invoice_items.item_id = items.id')
+                           .joins('INNER JOIN merchants ON items.merchant_id = merchants.id')
+                           .joins('INNER JOIN bulk_discounts ON bulk_discounts.id = invoice_items.bulk_discount_id')
+                           .where('merchants.id = bulk_discounts.merchant_id')
+                           .where(invoice_items: {invoice_id: id})
+                           .sum('(1.0 - (bulk_discounts.percentage_discount / 100.0)) * (invoice_items.unit_price) * invoice_items.quantity')
+    return 0 if revenue.nil?
+    revenue
   end
 end
