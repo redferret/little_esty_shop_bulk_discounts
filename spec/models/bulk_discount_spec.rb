@@ -33,8 +33,6 @@ RSpec.describe BulkDiscount, type: :model do
       it 'only applies this discount if the invoice status is in progress' do
         discount = FactoryBot.create(:bulk_discount, merchant: @merchant, quantity_threshold: 1)
 
-        discount.apply_discount
-
         @invoice_items.each(&:reload)
         expect(@invoice_item_1.bulk_discount_id).to eq discount.id
         expect(@invoice_item_2.bulk_discount_id).to eq discount.id
@@ -46,8 +44,6 @@ RSpec.describe BulkDiscount, type: :model do
       it 'applies only to invoice item quantities in range of another discount' do
         discount_1 = FactoryBot.create(:bulk_discount, merchant: @merchant, quantity_threshold: 5)
 
-        discount_1.apply_discount
-
         @invoice_items.each(&:reload)
 
         expect(@invoice_item_1.bulk_discount_id).to eq nil
@@ -57,8 +53,6 @@ RSpec.describe BulkDiscount, type: :model do
         expect(@invoice_item_5.bulk_discount_id).to eq discount_1.id
 
         discount_2 = FactoryBot.create(:bulk_discount, merchant: @merchant, quantity_threshold: 10)
-
-        discount_2.apply_discount
 
         @invoice_items.each(&:reload)
 
@@ -71,8 +65,6 @@ RSpec.describe BulkDiscount, type: :model do
         discount_2.quantity_threshold = 11
         discount_2.save
 
-        discount_2.apply_discount
-
         @invoice_items.each(&:reload)
         
         expect(@invoice_item_1.bulk_discount_id).to eq nil
@@ -83,8 +75,6 @@ RSpec.describe BulkDiscount, type: :model do
 
         discount_1.percentage_discount = 15
         discount_1.save
-
-        discount_1.apply_discount
 
         @invoice_items.each(&:reload)
         
