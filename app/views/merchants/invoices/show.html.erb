@@ -1,44 +1,61 @@
 <%= render partial: 'merchants/partials/navbar', locals: { merchant: @merchant }%>
-
-<div class="row">
-  <p class='col-12'>Invoice #<%= @invoice.id %></p>
-</div>
-
-<strong>Status: </strong><%= @invoice.status %><br/>
-<br>
-
-<p> Created on: <%= @invoice.created_at.strftime("%A, %B %-d, %Y") %></p>
-<p>Total Revenue: <%= @invoice.total_revenue %></p>
-
-
-<h4>Customer:</h4>
-  <%= @customer.first_name %> <%= @customer.last_name %><br>
-<br>
-<br>
-<h4>Items on this Invoice:</h4>
-<table class="table">
+<table class='table' id='invoice-details'>
   <thead>
-    <tr class="tr">
-      <th class="th1">Item Name</th>
-      <th class="th1">Quantity</th>
-      <th class="th1">Unit Price</th>
-      <th class="th1">Status</th>
+    <tr>
+      <th>Invoice #</th>
+      <th>Status</th>
+      <th>Creation Date</th>
+      <th>Total Revenue</th>
+      <th>Discounted Revenue</th>
+      <th>Customer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><%= @invoice.id%></td>
+      <td><%= @invoice.status%></td>
+      <td><%= @invoice.created_at.strftime("%A, %B %-d, %Y")%></td>
+      <td><%= number_to_currency(@invoice.total_revenue / 100.0)%></td>
+      <td><%= number_to_currency(@invoice.total_discounted_revenue / 100.0)%></td>
+      <td><%= @customer.first_name %> <%= @customer.last_name %></td>
+    </tr>
+  </tbody>
+</table>
+<br/>
+<br/>
+<h4>Items on this Invoice:</h4>
+<table class="table text-justify" id='invoice-items'>
+  <thead>
+    <tr>
+      <th>Item Name</th>
+      <th>Quantity</th>
+      <th>Unit Price</th>
+      <th>Price with Discount</th>
+      <th>Bulk Discount</th>
+      <th>Status</th>
     </tr>
   </thead>
 
   <tbody>
-    <% @invoice.invoice_items.each do |i| %>
-      <section id="the-status-<%= i.id %>">
-        <tr class="tr">
-          <td style="text-align:center"><%= i.item.name %></td>
-          <td style="text-align:center"><%= i.quantity %></td>
-          <td style="text-align:center">$<%= i.unit_price %></td>
-          <td style="text-align:center"><%= form_with model: @invoice, url: merchant_invoice_path(@merchant, @invoice), method: :patch do |f| %>
-                                          <%= f.select :status, Invoice.statuses.keys, selected: "#{@invoice.status}" %>
-                                          <%= f.submit 'Update Invoice' %>
-                                        <% end %></td><br/>
-        </tr>
-      </section>
+    <% @invoice.invoice_items.each do |invoice_item| %>
+      <tr id="invoice-item-<%= invoice_item.id %>">
+        <td><%= invoice_item.item.name %></td>
+        <td><%= invoice_item.quantity %></td>
+        <td><%= number_to_currency(invoice_item.unit_price / 100.0) %></td>
+        <td><%= calculate_discount(invoice_item)%></td>
+        <td>
+          <% if invoice_item.has_discount? %>
+            <%= link_to 'View Discount', merchant_bulk_discount_path(@merchant, invoice_item.bulk_discount), class:'btn btn-light btn-sm'%>
+          <% end %>
+        </td>
+        <td><%= invoice_item.status %></td>
+      </tr>
     <% end %>
   </tbody>
+  <%= form_with model: @invoice, url: merchant_invoice_path(@merchant, @invoice), method: :patch, local: true, id:'update-invoice-status' do |f| %>
+    <div class='form-group'>
+      <%= f.select :status, Invoice.statuses.keys, selected: "#{@invoice.status}", class:'form-control' %>
+    </div>
+    <%= f.submit 'Update Invoice', class:'btn btn-primary btn-sm' %>
+  <% end %>
 </table>

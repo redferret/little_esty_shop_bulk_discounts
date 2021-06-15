@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :bulk_discount do
-    percentage_discount { rand(5..90) }
-    quantity_threshold { [ 5, 10, 15, 20 ].sample }
+    percentage_discount { rand(5..95) }
+    quantity_threshold { [ 5, 10, 15, 20, 25, 30 ].sample }
   end
 
   factory :customer do
@@ -25,10 +25,12 @@ FactoryBot.define do
 
   factory :transaction do
     result { [ 0, 1 ].sample }
-    credit_card_number {Faker::Finance.credit_card}
+    credit_card_number { 4654405418249632 }
   end
 
   factory :invoice_item do
     status { [ 0, 1, 2 ].sample }
+    quantity { rand(1..20) }
+    unit_price { rand(100..99999) }
   end
 end

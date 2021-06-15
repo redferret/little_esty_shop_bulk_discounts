@@ -5,6 +5,7 @@ class Admin::InvoicesController < ApplicationController
   end
 
   def show
+    @customer = @invoice.customer
   end
 
   def edit

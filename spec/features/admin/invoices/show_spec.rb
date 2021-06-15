@@ -1,72 +1,88 @@
 require 'rails_helper'
 
-describe 'Admin Invoices Index Page' do
+RSpec.describe 'invoices show page,' do
   before :each do
-    @m1 = Merchant.create!(name: 'Merchant 1')
+    @merchant_1 = FactoryBot.create(:merchant)
 
-    @c1 = Customer.create!(first_name: 'Yo', last_name: 'Yoz', address: '123 Heyyo', city: 'Whoville', state: 'CO', zip: 12345)
-    @c2 = Customer.create!(first_name: 'Hey', last_name: 'Heyz')
+    @item_1 = FactoryBot.create(:item, merchant: @merchant_1)
+    @item_2 = FactoryBot.create(:item, merchant: @merchant_1)
+    @item_3 = FactoryBot.create(:item, merchant: @merchant_1)
 
-    @i1 = Invoice.create!(customer_id: @c1.id, status: 2, created_at: '2012-03-25 09:54:09')
-    @i2 = Invoice.create!(customer_id: @c2.id, status: 1, created_at: '2012-03-25 09:30:09')
+    @customer_1 = FactoryBot.create(:customer)
 
-    @item_1 = Item.create!(name: 'test', description: 'lalala', unit_price: 6, merchant_id: @m1.id)
-    @item_2 = Item.create!(name: 'rest', description: 'dont test me', unit_price: 12, merchant_id: @m1.id)
+    @invoice_1 = FactoryBot.create(:invoice, customer: @customer_1, status: :cancelled)
 
-    @ii_1 = InvoiceItem.create!(invoice_id: @i1.id, item_id: @item_1.id, quantity: 12, unit_price: 2, status: 0)
-    @ii_2 = InvoiceItem.create!(invoice_id: @i1.id, item_id: @item_2.id, quantity: 6, unit_price: 1, status: 1)
-    @ii_3 = InvoiceItem.create!(invoice_id: @i2.id, item_id: @item_2.id, quantity: 87, unit_price: 12, status: 2)
+    @invoice_item_1 = FactoryBot.create(:invoice_item, invoice: @invoice_1, item: @item_1, quantity: 9, unit_price: 1000)
+    @invoice_item_2 = FactoryBot.create(:invoice_item, invoice: @invoice_1, item: @item_2, quantity: 12, unit_price: 600)
+    @invoice_item_3 = FactoryBot.create(:invoice_item, invoice: @invoice_1, item: @item_3, quantity: 2, unit_price: 1200)
 
-    visit admin_invoice_path(@i1)
+    FactoryBot.create(:transaction, result: 1, invoice: @invoice_1)
+
+    @discount = FactoryBot.create(:bulk_discount, merchant: @merchant_1, percentage_discount: 10, quantity_threshold: 5)
+
+    visit admin_invoice_path(@invoice_1)
   end
 
-  it 'should display the id, status and created_at' do
-    expect(page).to have_content("Invoice ##{@i1.id}")
-    expect(page).to have_content("Created on: #{@i1.created_at.strftime("%A, %B %d, %Y")}")
-
-    expect(page).to_not have_content("Invoice ##{@i2.id}")
+  it 'shows the total discounted revenue' do
+    within '#invoice-details' do
+      expect(page).to have_content('Discounted Revenue')
+      expect(page).to have_content('$169.80')
+    end
+  end
+  
+  it "shows the total revenue for this invoice" do
+    within '#invoice-details' do
+      expect(page).to have_content("$186.00")
+    end
   end
 
-  it 'should display the customers name and shipping address' do
-    expect(page).to have_content("#{@c1.first_name} #{@c1.last_name}")
-    expect(page).to have_content(@c1.address)
-    expect(page).to have_content("#{@c1.city}, #{@c1.state} #{@c1.zip}")
-
-    expect(page).to_not have_content("#{@c2.first_name} #{@c2.last_name}")
+  it "has the invoice information" do
+    within '#invoice-details' do
+      expect(page).to have_content(@invoice_1.id)
+      expect(page).to have_content(@invoice_1.status)
+      expect(page).to have_content(@invoice_1.created_at.strftime("%A, %B %-d, %Y"))
+    end
   end
 
-  it 'should display all the items on the invoice' do
-    expect(page).to have_content(@item_1.name)
-    expect(page).to have_content(@item_2.name)
-
-    expect(page).to have_content(@ii_1.quantity)
-    expect(page).to have_content(@ii_2.quantity)
-
-    expect(page).to have_content("$#{@ii_1.unit_price}")
-    expect(page).to have_content("$#{@ii_2.unit_price}")
-
-    expect(page).to have_content(@ii_1.status)
-    expect(page).to have_content(@ii_2.status)
-
-    expect(page).to_not have_content(@ii_3.quantity)
-    expect(page).to_not have_content("$#{@ii_3.unit_price}")
-    expect(page).to_not have_content(@ii_3.status)
+  it "has the customer information" do
+    within '#invoice-details' do
+      expect(page).to have_content(@customer_1.first_name)
+      expect(page).to have_content(@customer_1.last_name)
+    end
   end
 
-  it 'should display the total revenue the invoice will generate' do
-    expect(page).to have_content("Total Revenue: $#{@i1.total_revenue}")
-
-    expect(page).to_not have_content(@i2.total_revenue)
+  it "shows invoice item details with a discount link" do
+    within '#invoice-items' do
+      within "#invoice-item-#{@invoice_item_1.id}" do
+        expect(page).to have_content(@item_1.name)
+        expect(page).to have_content(@invoice_item_1.quantity)
+        expect(page).to have_content('$10.00')
+        expect(page).to have_content('$9.00')
+        expect(page).to have_content(@invoice_item_1.status)
+      end
+    end
   end
 
-  it 'should have status as a select field that updates the invoices status' do
-    within("#status-update-#{@i1.id}") do
-      select('cancelled', :from => 'invoice[status]')
-      expect(page).to have_button('Update Invoice')
-      click_button 'Update Invoice'
+  it 'shows invoice item without a discount with no link to a discount' do
+    within '#invoice-items' do
+      within "#invoice-item-#{@invoice_item_3.id}" do
+        expect(page).to have_content(@item_3.name)
+        expect(page).to have_content(@invoice_item_3.quantity)
+        expect(page).to have_content('$12.00')
+        expect(page).to have_content('No Discount')
+        expect(page).to have_content(@invoice_item_3.status)
+      end
+    end
+  end
 
-      expect(current_path).to eq(admin_invoice_path(@i1))
-      expect(@i1.status).to eq('completed')
+  it "shows a select field to update the invoice status" do
+    within '#update-invoice-status' do
+      select 'in_progress', from: 'invoice[status]'
+      click_button "Update Invoice"
+    end
+
+    within '#update-invoice-status' do
+      expect(page.has_select?('invoice[status]', selected: 'in_progress')).to eq true
     end
   end
 end
