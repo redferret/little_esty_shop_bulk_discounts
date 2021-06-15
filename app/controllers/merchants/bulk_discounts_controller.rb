@@ -46,7 +46,8 @@ class Merchants::BulkDiscountsController < ApplicationController
   def destroy
     bulk_discount = BulkDiscount.find(params[:id])
     if bulk_discount.destroy!
-      redirect_to merchant_bulk_discount_path(@merchant, @bulk_discount)
+      flash[:success] = 'Deleted Discount'
+      redirect_to merchant_bulk_discounts_path(@merchant)
     else
       flash[:alert] = "Couldn't delete discount"
       redirect_to edit_merchant_bulk_discount_path(@merchant, @bulk_discount)
