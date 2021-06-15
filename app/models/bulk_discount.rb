@@ -1,4 +1,7 @@
 class BulkDiscount < ApplicationRecord
+  after_create :apply_discount
+  after_update :apply_discount
+
   validates_presence_of :percentage_discount, numericality: true
   validates_presence_of :quantity_threshold
 
