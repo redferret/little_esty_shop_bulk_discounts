@@ -67,7 +67,6 @@ RSpec.describe 'invoices show page,' do
   it 'shows invoice item without a discount with no link to a discount' do
     within '#invoice-items' do
       within "#invoice-item-#{@invoice_item_3.id}" do
-        save_and_open_page
         expect(page).to have_content(@item_3.name)
         expect(page).to have_content(@invoice_item_3.quantity)
         expect(page).to have_content('$12.00')
