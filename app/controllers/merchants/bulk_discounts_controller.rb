@@ -61,5 +61,6 @@ class Merchants::BulkDiscountsController < ApplicationController
 
   def set_merchant
     @merchant = Merchant.find(params[:merchant_id])
+    @bulk_discounts = @merchant.bulk_discounts.order(:quantity_threshold)
   end
 end

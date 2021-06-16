@@ -45,7 +45,7 @@
         <td><%= calculate_discount(invoice_item)%></td>
         <td>
           <% if invoice_item.has_discount? %>
-            <%= link_to 'View Discount', merchant_bulk_discount_path(@merchant, invoice_item.bulk_discount), class:'btn btn-light btn-sm'%>
+            <%= link_to 'View Discount', merchant_bulk_discount_path(@merchant, invoice_item.bulk_discount), class:'badge badge-primary'%>
           <% end %>
         </td>
         <td><%= invoice_item.status %></td>

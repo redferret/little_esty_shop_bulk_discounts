@@ -14,7 +14,7 @@
         </tr>
       </thead>
       <tbody>
-      <% @merchant.bulk_discounts.each_with_index do |discount, index| %>
+      <% @bulk_discounts.each_with_index do |discount, index| %>
         <tr id='discount-<%= discount.id%>'>
           <td><%= (index + 1)%>.</td>
           <td><%= discount.percentage_discount%>%</td>
