@@ -19,7 +19,7 @@ class BulkDiscount < ApplicationRecord
 
   def update_discounts
     next_discount_threshold = BulkDiscount.next_quantity_threshold_from quantity_threshold
-    BulkDiscount.check_all_discounts_below(next_discount_threshold)
+    BulkDiscount.check_all_discounts_below next_discount_threshold
   end
 
   def check_all_discounts_above_this_discount_threshold
