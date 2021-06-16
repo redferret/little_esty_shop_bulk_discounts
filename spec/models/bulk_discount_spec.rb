@@ -102,7 +102,7 @@ RSpec.describe BulkDiscount, type: :model do
     end
     
     describe '#apply_discount' do
-      it 'only applies this discount if the invoice status is in progress' do
+      it 'applies discount to all if no other exists' do
         discount = FactoryBot.create(:bulk_discount, merchant: @merchant, quantity_threshold: 1)
 
         @invoice_items.each(&:reload)
