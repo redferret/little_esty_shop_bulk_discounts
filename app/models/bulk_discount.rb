@@ -1,7 +1,7 @@
 class BulkDiscount < ApplicationRecord
   after_create :apply_discount
   after_update :apply_discount
-  after_destroy :update_discounts
+  after_destroy :update_discounts_after_destroy
 
   validates_presence_of :percentage_discount, numericality: true
   validates_presence_of :quantity_threshold
@@ -17,7 +17,7 @@ class BulkDiscount < ApplicationRecord
 
   private
 
-  def update_discounts
+  def update_discounts_after_destroy
     next_discount_threshold = BulkDiscount.next_quantity_threshold_from quantity_threshold
     BulkDiscount.check_all_discounts_below next_discount_threshold
   end
