@@ -4,7 +4,7 @@ class BulkDiscount < ApplicationRecord
   after_destroy :update_discounts_after_destroy
 
   validates_presence_of :percentage_discount, numericality: true
-  validates_presence_of :quantity_threshold
+  validates_presence_of :quantity_threshold, numericality: true
 
   has_many :invoice_items, dependent: :nullify
   belongs_to :merchant
