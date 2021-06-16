@@ -46,7 +46,7 @@ class Invoice < ApplicationRecord
                            .joins('INNER JOIN bulk_discounts ON bulk_discounts.id = invoice_items.bulk_discount_id')
                            .where('merchants.id = bulk_discounts.merchant_id')
                            .where(invoice_items: {invoice_id: id})
-                           .sum('(1.0 - (bulk_discounts.percentage_discount / 100.0)) * (invoice_items.unit_price) * invoice_items.quantity')
+                           .sum('(1.0 - (bulk_discounts.percentage_discount / 100.0)) * (invoice_items.unit_price * invoice_items.quantity)')
     return 0 if revenue.nil?
     revenue
   end

@@ -71,6 +71,34 @@ RSpec.describe BulkDiscount, type: :model do
         expect(@invoice_item_6.bulk_discount_id).to eq discount_3.id
         expect(@invoice_item_7.bulk_discount_id).to eq discount_3.id
       end
+      it 'removes the discount and updates invoice items that can have other discounts applied to it' do
+        discount_1 = FactoryBot.create(:bulk_discount, merchant: @merchant, quantity_threshold: 2)
+        discount_2 = FactoryBot.create(:bulk_discount, merchant: @merchant, quantity_threshold: 10)
+        discount_3 = FactoryBot.create(:bulk_discount, merchant: @merchant, quantity_threshold: 20)
+
+        @invoice_items.each(&:reload)
+
+        expect(@invoice_item_1.bulk_discount_id).to eq nil
+        expect(@invoice_item_2.bulk_discount_id).to eq discount_1.id
+        expect(@invoice_item_3.bulk_discount_id).to eq discount_1.id
+        expect(@invoice_item_4.bulk_discount_id).to eq discount_2.id
+        expect(@invoice_item_5.bulk_discount_id).to eq discount_2.id
+        expect(@invoice_item_6.bulk_discount_id).to eq discount_3.id
+        expect(@invoice_item_7.bulk_discount_id).to eq discount_3.id
+
+
+        discount_3.destroy
+
+        @invoice_items.each(&:reload)
+
+        expect(@invoice_item_1.bulk_discount_id).to eq nil
+        expect(@invoice_item_2.bulk_discount_id).to eq discount_1.id
+        expect(@invoice_item_3.bulk_discount_id).to eq discount_1.id
+        expect(@invoice_item_4.bulk_discount_id).to eq discount_2.id
+        expect(@invoice_item_5.bulk_discount_id).to eq discount_2.id
+        expect(@invoice_item_6.bulk_discount_id).to eq discount_2.id
+        expect(@invoice_item_7.bulk_discount_id).to eq discount_2.id
+      end
     end
     
     describe '#apply_discount' do
@@ -126,6 +154,7 @@ RSpec.describe BulkDiscount, type: :model do
         expect(@invoice_item_7.bulk_discount_id).to eq discount_2.id
 
         discount_1.percentage_discount = 15
+        
         discount_1.save
 
         @invoice_items.each(&:reload)
